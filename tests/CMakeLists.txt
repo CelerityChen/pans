@@ -42,3 +42,6 @@ foreach(TEST_SOURCE IN LISTS PANS_TEST_SOURCES)
     # 注册到 CTest，可用 ctest 运行
     add_test(NAME "${TEST_NAME}" COMMAND "${TEST_NAME}")
 endforeach()
+
+# 内部实现测试（依赖 pans/src，不对外暴露）
+add_subdirectory(inner_test)
