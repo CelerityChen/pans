@@ -1,0 +1,17 @@
+#ifndef PANS_INCLUDE_UTILS_THREAD_UTILS_H
+#define PANS_INCLUDE_UTILS_THREAD_UTILS_H
+
+#include <string>
+#include <string_view>
+
+#include <pans/export.h>
+#include <pans/macros.h>
+
+namespace pans{
+    [[nodiscard]] PANS_API u64 GetThreadId() noexcept;
+
+    PANS_API void SetThreadName(std::string name);
+
+    [[nodiscard]] PANS_API std::string_view GetThreadName() noexcept;
+}
+#endif

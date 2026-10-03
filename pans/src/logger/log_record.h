@@ -21,7 +21,6 @@ namespace pans::detail{
         u64 m_fiber_id = 0;                                // 协程ID
         std::string_view m_thread_name = "";                // 线程名字
         std::string_view m_file_name = "";                  // 文件名字
-        std::string_view m_function_name = "";              // 函数名字
         u32 m_line = 0;                                     // 行号
     };
 }
