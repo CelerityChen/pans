@@ -10,6 +10,7 @@ target_compile_options(pans_options INTERFACE
         -Wextra              # 比 -Wall 更严格的额外警告
         -Wpedantic           # 严格遵循语言标准
         -fno-strict-aliasing # 禁用严格别名优化，避免未定义行为相关陷阱
+        -Wno-builtin-macro-redefined # 禁用内置宏重定义警告
     >
 )
 

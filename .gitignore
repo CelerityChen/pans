@@ -40,9 +40,11 @@
 *.app
 
 # Build directories
-build/
-Build/
-build-*/
+[Bb]uild/
+[Bb]uild-*/
+
+# Compiled third-party dependencies (PANS_THIRD_PARTY_OUTPUT_DIR)
+/third_party/output/
 
 # CMake generated files
 CMakeFiles/

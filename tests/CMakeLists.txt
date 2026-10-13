@@ -10,6 +10,7 @@ file(GLOB PANS_TEST_SOURCES CONFIGURE_DEPENDS
 )
 
 list(SORT PANS_TEST_SOURCES)
+redefine_file_macro("${PANS_TEST_SOURCES}")
 
 find_package(Threads REQUIRED)
 
@@ -22,8 +23,8 @@ foreach(TEST_SOURCE IN LISTS PANS_TEST_SOURCES)
 
     # 避免与已有目标重名
     if(TARGET "${TEST_NAME}")
-        message(FATAL_ERROR "Cannot create test target '{TEST_NAME}': a target with that name already exists")
-        endif()
+        message(FATAL_ERROR "Cannot create test target '${TEST_NAME}': a target with that name already exists")
+    endif()
 
     add_executable("${TEST_NAME}" "${TEST_SOURCE}")
 

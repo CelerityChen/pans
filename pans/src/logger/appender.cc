@@ -8,9 +8,12 @@
 #include <pans/macros.h>
 
 #if defined(_WIN32)
-#include <io.h.
+#include <io.h>
 #else
 #include <unistd.h>
+#endif
+#if defined(__APPLE__)
+#include <fcntl.h>
 #endif
 
 namespace pans{
@@ -142,6 +145,13 @@ namespace pans{
                 ::_commit(::_fileno(m_file));
 #elif defined(__linux__)
                 ::fdatasync(::fileno(m_file));
+#elif defined(__APPLE__)
+                // macOS 的 fsync 只把数据交给磁盘，不保证磁盘缓存落盘；F_FULLFSYNC 才保证持久化，
+                // 部分文件系统（如网络盘）不支持时回退到 fsync
+                if (::fcntl(::fileno(m_file), F_FULLFSYNC) == -1)
+                {
+                    ::fsync(::fileno(m_file));
+                }
 #else
                 // macOS 等 POSIX：无 fdatasync，用 fsync 将内容和元数据刷盘
                 ::fsync(::fileno(m_file));

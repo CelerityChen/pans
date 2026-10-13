@@ -128,7 +128,13 @@ namespace pans
 #if defined(__linux__)
         static thread_local u64 THREAD_ID = static_cast<u64>(syscall(SYS_gettid));
 #elif defined(__APPLE__)
-        static thread_local u64 THREAD_ID = pthread_mach_thread_np(pthread_self());
+        // pthread_threadid_np：系统范围唯一的 64 位线程 ID，与 lldb、Instruments 中显示的一致；
+        // pthread_mach_thread_np 返回的是进程内的 Mach 端口名，不适合作为日志中的线程标识
+        static thread_local u64 THREAD_ID = []() noexcept {
+            u64 thread_id = 0;
+            (void)pthread_threadid_np(nullptr, &thread_id);
+            return thread_id;
+        }();
 #elif defined(_WIN32)
         static thread_local u64 THREAD_ID = static_cast<u64>(::GetCurrentThreadId());
 #else
