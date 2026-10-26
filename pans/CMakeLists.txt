@@ -19,6 +19,10 @@ target_include_directories(pans
 
 target_link_libraries(pans PUBLIC pans_options) # 继承所有编译/链接选项
 
+# 项目根目录，GetBacktrace 用它把调试信息中的绝对路径裁成相对路径；PRIVATE 不会传给使用方。
+# \"：宏的值是带引号的字符串字面量，末尾的 / 保证裁剪后不以 / 开头。
+target_compile_definitions(pans PRIVATE "PANS_SOURCE_DIR=\"${PROJECT_SOURCE_DIR}/\"")
+
 # Threads::Threads：由 pansDependencies.cmake 中的 find_package(Threads) 提供。
 target_link_libraries(pans PUBLIC Threads::Threads)
 

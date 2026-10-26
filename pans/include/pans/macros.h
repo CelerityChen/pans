@@ -2,8 +2,9 @@
 #define PANS_INCLUDE_PANS_MACROS_H
 
 #include <cassert>
-#include <iostream>
-#include <cstdint>
+
+#include <logger/log.h>
+#include <utils/system_utils.h>
 
 // ---------------------------------------------------------------------------
 // 断言宏
@@ -13,18 +14,18 @@
 
 /// 条件为假时打印错误并触发 assert。
 #define PANS_ASSERT(x)                                                                                   \
-    if (!(x)) [[unlikely]]                                                                               \
+    if (const bool pans_assert_ok = static_cast<bool>(x); !pans_assert_ok) [[unlikely]]                 \
     {                                                                                                    \
-        std::cerr << __FILE__ << ":" << __LINE__ << " ASSERT FAILED: " << #x << "\nStacktrace: to do\n"; \
-        assert(x);                                                                                       \
+        PANS_LOG_FATAL(PANS_LOG_ROOT()) << __FILE__ << ":" << __LINE__ << " ASSERT FAILED: " << #x << "\nStacktrace: \n" << pans::GetBacktrace(); \
+        assert(pans_assert_ok);                                                                          \
     }
 
 /// 同上，额外打印自定义信息 w。
 #define PANS_ASSERT_INFO(x, w)                                                                                           \
-    if (!(x)) [[unlikely]]                                                                                               \
+    if (const bool pans_assert_ok = static_cast<bool>(x); !pans_assert_ok) [[unlikely]]                                 \
     {                                                                                                                    \
-        std::cerr << __FILE__ << ":" << __LINE__ << " ASSERT FAILED: " << #x << "\n[" << w << "]\nStack trace: to do\n"; \
-        assert(x);                                                                                                       \
+        PANS_LOG_FATAL(PANS_LOG_ROOT()) << __FILE__ << ":" << __LINE__ << " ASSERT FAILED: " << #x << "\n[" << w << "]\nStack trace: \n" << pans::GetBacktrace(); \
+        assert(pans_assert_ok);                                                                                          \
     }
 
 /// 条件为假时断言并返回指定值 val（用于有返回值的函数）。
@@ -129,33 +130,5 @@
     else                           \
     {                              \
     }
-
-// ---------------------------------------------------------------------------
-// 无效值常量（各宽度无符号整数的全 1，常作哨兵/未初始化标记）
-// ---------------------------------------------------------------------------
-#define INVALID64 (~0ULL)
-#define INVALID32 0xFFFFFFFF
-#define INVALID16 0xFFFF
-#define INVALID8 0xFF
-
-// ---------------------------------------------------------------------------
-// 各宽度无符号整数最大值
-// ---------------------------------------------------------------------------
-#define MAX_U8 0xFF
-#define MAX_U16 0xFFFF
-#define MAX_U32 0xFFFFFFFF
-#define MAX_U64 (~0ULL)
-
-// ---------------------------------------------------------------------------
-// 固定宽度整数类型别名
-// ---------------------------------------------------------------------------
-using u8 = uint8_t;
-using s8 = int8_t;
-using u16 = uint16_t;
-using s16 = int16_t;
-using u32 = uint32_t;
-using s32 = int32_t;
-using u64 = uint64_t;
-using s64 = int64_t;
 
 #endif

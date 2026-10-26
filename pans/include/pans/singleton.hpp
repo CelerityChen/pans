@@ -34,6 +34,10 @@ namespace pans
     class Singleton
     {
     public:
+        /**
+         * @brief 获取 T 的全局唯一实例。
+         * @return T 的进程内唯一实例引用。
+         */
         static inline T &Instance()
         {
             static T instance;

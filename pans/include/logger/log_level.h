@@ -5,6 +5,7 @@
 #include <string_view>
 
 #include <pans/export.h>
+#include <pans/types.h>
 
 namespace pans {
 
@@ -16,7 +17,7 @@ namespace pans {
 // ---------------------------------------------------------------------------
 class PANS_API LogLevel final {
 public:
-    enum class Level : std::uint8_t {
+    enum class Level : u8 {
         LOG_LV_DEBUG = 1,  // 调试：变量值、调用路径等
         LOG_LV_INFO = 2,   // 信息：启动、配置加载等正常事件
         LOG_LV_WARN = 3,   // 警告：可恢复的异常或潜在风险

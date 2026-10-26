@@ -8,7 +8,7 @@
 #include <logger/log_level.h>
 #include <logger/appender.h>
 #include <logger/logger.h>
-#include <pans/macros.h>
+#include <pans/types.h>
 
 // pans::detail 命名空间
 // 不推荐调用者直接使用；
@@ -23,14 +23,44 @@ namespace pans::detail
     class PANS_API LogLine final
     {
     public:
+        /**
+         * @brief 创建一条日志行。
+         * @param logger 目标日志器。
+         * @param level 日志级别。
+         * @param line 源代码行号。
+         * @param file_name 源文件名。
+         */
         LogLine(Logger &logger, LogLevel::Level level, u32 line, std::string_view file_name);
+
+        /**
+         * @brief 提交并销毁日志行。
+         */
         ~LogLine() noexcept;
 
+        /**
+         * @brief 禁止复制构造。
+         */
         LogLine(const LogLine &) = delete;
+
+        /**
+         * @brief 禁止复制赋值。
+         */
         LogLine operator=(const LogLine &) = delete;
+
+        /**
+         * @brief 禁止移动构造。
+         */
         LogLine(LogLine &&) = delete;
+
+        /**
+         * @brief 禁止移动赋值。
+         */
         LogLine &operator=(LogLine &&) = delete;
 
+        /**
+         * @brief 获取用于写入日志内容的输出流。
+         * @return 日志内容输出流。
+         */
         [[nodiscard]] std::ostream &stream() noexcept;
 
     private:
@@ -42,6 +72,15 @@ namespace pans::detail
         [[nodiscard]] Impl &getImpl() noexcept;
     };
 
+    /**
+     * @brief 使用 printf 风格格式串写入一条日志。
+     * @param logger 目标日志器。
+     * @param level 日志级别。
+     * @param line 源代码行号。
+     * @param file_name 源文件名。
+     * @param format printf 风格格式串。
+     * @param ... 与 format 对应的可变参数。
+     */
     PANS_API void LogPrintf(Logger &logger, LogLevel::Level level, u32 line, std::string_view file_name, const char *format, ...);
 }
 

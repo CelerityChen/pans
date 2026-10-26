@@ -22,8 +22,10 @@
 
 namespace pans {
 
-/// 自旋忙等中插入的 CPU 松弛提示，避免空转占满流水线。
-/// 在不支持 pause/yield 的架构上退化为空操作。
+/**
+ * @brief 在自旋忙等中插入 CPU 松弛提示，避免空转占满流水线。
+ * @note 在不支持 pause/yield 的架构上退化为空操作。
+ */
 inline void cpu_relax()
 {
 #if defined(__x86_64__) || defined(__i386__)
@@ -58,31 +60,53 @@ private:
 public:
     using Lock = std::lock_guard<Spinlock>;
 
+    /**
+     * @brief 初始化 pthread 自旋锁。
+     */
     Spinlock() noexcept
     {
         // PTHREAD_PROCESS_PRIVATE：仅进程内共享；init 对这种用法几乎总是成功
         pthread_spin_init(&m_mutex, PTHREAD_PROCESS_PRIVATE);
     }
 
+    /**
+     * @brief 销毁 pthread 自旋锁。
+     */
     ~Spinlock() noexcept
     {
         pthread_spin_destroy(&m_mutex);
     }
 
+    /**
+     * @brief 禁止复制构造。
+     */
     Spinlock(const Spinlock&) = delete;
+
+    /**
+     * @brief 禁止复制赋值。
+     */
     Spinlock& operator=(const Spinlock&) = delete;
 
+    /**
+     * @brief 获取自旋锁，锁被占用时持续等待。
+     */
     void lock() noexcept
     {
         pthread_spin_lock(&m_mutex);
     }
 
-    /// 尝试获取锁；成功返回 true，已被占用返回 false。
+    /**
+     * @brief 尝试获取锁。
+     * @return 成功获取锁返回 true，锁已被占用返回 false。
+     */
     [[nodiscard]] bool try_lock() noexcept
     {
         return pthread_spin_trylock(&m_mutex) == 0;
     }
 
+    /**
+     * @brief 释放自旋锁。
+     */
     void unlock() noexcept
     {
         pthread_spin_unlock(&m_mutex);
@@ -100,12 +124,29 @@ private:
 public:
     using Lock = std::lock_guard<Spinlock>;
 
+    /**
+     * @brief 初始化 atomic_flag 自旋锁。
+     */
     Spinlock() noexcept = default;
+
+    /**
+     * @brief 销毁 atomic_flag 自旋锁。
+     */
     ~Spinlock() noexcept = default;
 
+    /**
+     * @brief 禁止复制构造。
+     */
     Spinlock(const Spinlock&) = delete;
+
+    /**
+     * @brief 禁止复制赋值。
+     */
     Spinlock& operator=(const Spinlock&) = delete;
 
+    /**
+     * @brief 获取自旋锁，锁被占用时持续等待。
+     */
     void lock() noexcept
     {
         // TTAS：外层 test_and_set 争用；失败后内层只读 test + cpu_relax，
@@ -119,12 +160,18 @@ public:
         }
     }
 
-    /// 尝试获取锁；成功返回 true，已被占用返回 false。
+    /**
+     * @brief 尝试获取锁。
+     * @return 成功获取锁返回 true，锁已被占用返回 false。
+     */
     [[nodiscard]] bool try_lock() noexcept
     {
         return !m_mutex.test_and_set(std::memory_order_acquire);
     }
 
+    /**
+     * @brief 释放自旋锁。
+     */
     void unlock() noexcept
     {
         m_mutex.clear(std::memory_order_release);
